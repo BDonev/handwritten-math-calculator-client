@@ -45,26 +45,17 @@ public class ImageUploadTask extends AsyncTask<Void, Integer, String> {
                 new URL(this.urlString);
         HttpURLConnection urlConnection = (HttpURLConnection) serverUrl.openConnection();
 
-        String boundaryString = "----SomeRandomText";
         File imageFile = new File(this.filePath);
 
 // Indicate that we want to write to the HTTP request body
         urlConnection.setDoOutput(true);
         urlConnection.setRequestMethod("POST");
-        urlConnection.addRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundaryString);
+        urlConnection.addRequestProperty("Content-Type", "multipart/form-data; boundary=boundary");
 
         OutputStream outputStreamToRequestBody = urlConnection.getOutputStream();
         BufferedWriter httpRequestBodyWriter =
                 new BufferedWriter(new OutputStreamWriter(outputStreamToRequestBody));
 
-// Include value from the myFileDescription text area in the post data
-        httpRequestBodyWriter.write("\n\n--" + boundaryString + "\n");
-        httpRequestBodyWriter.write("Content-Disposition: form-data; name=\"myFileDescription\"");
-        httpRequestBodyWriter.write("\n\n");
-        httpRequestBodyWriter.write("Log file for 20150208");
-
-// Include the section to describe the file
-        httpRequestBodyWriter.write("\n--" + boundaryString + "\n");
         httpRequestBodyWriter.write("Content-Disposition: form-data;"
                 + "name=\"pic\";"
                 + "filename=\""+ imageFile.getName() +"\""
@@ -83,7 +74,7 @@ public class ImageUploadTask extends AsyncTask<Void, Integer, String> {
         outputStreamToRequestBody.flush();
 
 // Mark the end of the multipart http request
-        httpRequestBodyWriter.write("\n--" + boundaryString + "--\n");
+        httpRequestBodyWriter.write("\n--boundary--\n");
         httpRequestBodyWriter.flush();
 
 // Close the streams

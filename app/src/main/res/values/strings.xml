@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Handwritten Math Calculator</string>
     <string name="take_photo">Take photo</string>
-    <string name="take_photo_hint">Take a photo of a mathematical problem to see solution</string>
+    <string name="take_photo_hint">Take a photo or upload an image of a mathematical problem to see solution</string>
     <string name="photo_from_gallery">Open gallery</string>
+    <string name="local_host_server">http://10.0.2.2:5000</string>
+    <string name="ip_and_port">IP and port of the server</string>
 </resources>

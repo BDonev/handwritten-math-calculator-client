@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,14 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_FROM_GALLERY = 2;
-    private static final String HOST_URL = "http://10.0.2.2:5000";
-    private static final String UPLOAD_URL = HOST_URL + "/uploadImage";
-    private static final String OUTPUT_URL = HOST_URL + "/getOutput";
+    private static final String UPLOAD_ENDPOINT = "/uploadImage";
+    private static final String OUTPUT_ENDPOINT = "/getOutput";
 
     private Button takePhotoButton;
     private Button photoFromGalleryButton;
     private TextView resultTextView;
     private ImageView imageView;
+    private EditText serverAddressEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         photoFromGalleryButton = findViewById(R.id.photoFromGalleryButton);
         resultTextView = findViewById(R.id.resultTextView);
         imageView = findViewById(R.id.imageView);
+        serverAddressEditText = findViewById(R.id.serverAddressEditText);
     }
 
     private void initListeners() {
@@ -145,24 +147,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void uploadImage(File imageFile) {
         String filePath = imageFile.getAbsolutePath();
-        ImageUploadTask imageUploadTask = new ImageUploadTask(filePath, UPLOAD_URL);
+        String host = serverAddressEditText.getText().toString();
+        ImageUploadTask imageUploadTask = new ImageUploadTask(filePath, host+UPLOAD_ENDPOINT);
         imageUploadTask.execute();
     }
 
     private void getOutput() {
-        GetOutputTask getOutputTask = new GetOutputTask(OUTPUT_URL);
+        String host = serverAddressEditText.getText().toString();
+        GetOutputTask getOutputTask = new GetOutputTask(host+OUTPUT_ENDPOINT);
         try {
             String expression = getOutputTask.execute().get();
             ExpressionEvaluator evaluator = new ExpressionEvaluator(expression);
             String result = evaluator.evaluate();
-            resultTextView.setText(result);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            resultTextView.setText(expression + " = " + result);
+        } catch (InterruptedException | ExecutionException | IOException e) {
             resultTextView.setText("Error");
+            e.printStackTrace();
         }
     }
 
